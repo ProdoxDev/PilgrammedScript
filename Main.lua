@@ -52,7 +52,7 @@ end)
 spawn(function()
 	game:GetService("RunService").RenderStepped:Connect(function()
 		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-		if getgenv().AutoFarm or getgenv().AutoFarmTool ~= "" then
+		if getgenv().AutoFarm and getgenv().AutoFarmTool ~= "" then
 			local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 			local Backpack = LocalPlayer:WaitForChild("Backpack")
 			if Character and Character:FindFirstChild("Humanoid") and Character.Humanoid.Health > 0 and Backpack then
