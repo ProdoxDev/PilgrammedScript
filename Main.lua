@@ -14,7 +14,6 @@ getgenv().Weapons = {}
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Debugging function
 
 -- Prevent idling
 local GC = getconnections or get_signal_cons
