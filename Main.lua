@@ -15,10 +15,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- Debugging function
-local function log(message)
-	rconsoleprint(message .. "\n") -- Logs to a separate exploit console (if supported)
-	print(message) -- Logs to the in-game console
-end
 
 -- Prevent idling
 local GC = getconnections or get_signal_cons
@@ -26,10 +22,10 @@ if GC then
 	for _, v in pairs(GC(LocalPlayer.Idled)) do
 		if v["Disable"] then
 			v["Disable"](v)
-			log("Idle connection disabled.")
+			print("Idle connection disabled.")
 		elseif v["Disconnect"] then
 			v["Disconnect"](v)
-			log("Idle connection disconnected.")
+			print("Idle connection disconnected.")
 		end
 	end
 else
@@ -37,7 +33,7 @@ else
 	LocalPlayer.Idled:Connect(function()
 		VirtualUser:CaptureController()
 		VirtualUser:ClickButton2(Vector2.new())
-		log("VirtualUser handled idle event.")
+		print("VirtualUser handled idle event.")
 	end)
 end
 
@@ -58,28 +54,28 @@ spawn(function()
 	while wait() do
 		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 		if not getgenv().AutoFarm or getgenv().AutoFarmTool == "" then
-			log("AutoFarm disabled. Skipping this cycle.")
+			print("AutoFarm disabled. Skipping this cycle.")
 			continue -- Skip the current iteration but continue the loop
 		end
 
 		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 		local Backpack = LocalPlayer:WaitForChild("Backpack")
 		if Character and Character:FindFirstChild("Humanoid") and Character.Humanoid.Health > 0 and Backpack then
-			log("Character and Humanoid are valid.")
+			print("Character and Humanoid are valid.")
 			if Backpack:FindFirstChild(getgenv().AutoFarmTool) and not Character:FindFirstChild(getgenv().AutoFarmTool) then
 				local tool = Backpack:FindFirstChild(getgenv().AutoFarmTool)
 				tool.Parent = Character
-				log("'Ceremonial Greatblade' equipped.")
+				print("'Ceremonial Greatblade' equipped.")
 				wait(2)
 			else
-				log("Found 'Ceremonial Greatblade' in Backpack.")
+				print("Found 'Ceremonial Greatblade' in Backpack.")
 			end
 			local ToolInstance = Character:FindFirstChild(getgenv().AutoFarmTool)
 			if ToolInstance and ToolInstance:FindFirstChild("Slash") then
 				local SlashEvent = ToolInstance:FindFirstChild("Slash")
 				for i = 1, 4 do
 					SlashEvent:FireServer(i)
-					log("SlashEvent:FireServer(" .. i .. ") called.")
+					print("SlashEvent:FireServer(" .. i .. ") called.")
 				end
 
 
@@ -87,7 +83,7 @@ spawn(function()
 				for _, MOBB in pairs(workspace.Mobs:GetChildren()) do
 					if MOBB:GetAttribute("Tower") == true and MOBB:FindFirstChildOfClass("Humanoid") and MOBB:FindFirstChildOfClass("Humanoid").Health > 0 then
 						mob = MOBB
-						log("Found mob with Tower attribute.")
+						print("Found mob with Tower attribute.")
 						break
 					end
 				end
@@ -96,13 +92,13 @@ spawn(function()
 					spawn(function()
 						if Character:FindFirstChild("HumanoidRootPart") then
 							Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0,0,getgenv().Distance)
-							log("Teleported to mob.")
+							print("Teleported to mob.")
 						end
 					end)
 				else
 					if Character:FindFirstChild("HumanoidRootPart") then
 						Character.HumanoidRootPart.CFrame = CFrame.new(4150, 403, -2380)
-						log("Teleported to default position.")
+						print("Teleported to default position.")
 					end
 					if LocalPlayer.PlayerGui:FindFirstChild("ScreenGui") and LocalPlayer.PlayerGui.ScreenGui:FindFirstChild("Dialog") then
 						wait(2)
@@ -111,17 +107,17 @@ spawn(function()
 								workspace:WaitForChild("Map"):WaitForChild("TowerIsland"):WaitForChild("Plate"):WaitForChild("RemoteEvent"):FireServer(i)
 								wait()
 							end
-							log("Plate remote event fired.")
+							print("Plate remote event fired.")
 						end)
 					end
 				end
 			else
-				log("Tool or SlashEvent missing.")
+				print("Tool or SlashEvent missing.")
 				Character:FindFirstChild("Humanoid").Health = 0
 			end
 		else
 			wait(7)
-			log("Character or Humanoid invalid.")
+			print("Character or Humanoid invalid.")
 		end
 	end
 end)
@@ -158,7 +154,7 @@ local Tabs = {
 }
 
 do
-	
+
 	local WeaponsDropdown = Tabs.Main:AddDropdown("WeaponsDropdown", {
 		Title = "Select weapon",
 		Values = getgenv().Weapons,
@@ -168,7 +164,7 @@ do
 	WeaponsDropdown:OnChanged(function(Value)
 		getgenv().AutoFarmTool = Value
 	end)
-	
+
 	Tabs.Main:AddButton({
 		Title = "Refresh weapons",
 		Description = "Refresh weapons",
@@ -176,7 +172,7 @@ do
 			refreshWeapons()
 		end
 	})
-	
+
 	local AutofarmToggle = Tabs.Main:AddToggle("Autofarm", {Title = "Autofarm XP/Money", Default = getgenv().AutoFarm })
 	AutofarmToggle:OnChanged(function()
 		getgenv().AutoFarm = Options.Autofarm.Value
@@ -225,4 +221,3 @@ Fluent:Notify({
 	Content = "Script has been loaded.",
 	Duration = 8
 })
-
