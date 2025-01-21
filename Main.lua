@@ -52,7 +52,7 @@ end)
 spawn(function()
 	game:GetService("RunService").RenderStepped:Connect(function()
 		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-		if getgenv().AutoFarm == true and getgenv().AutoFarmTool ~= "" then
+		if getgenv().AutoFarm and getgenv().AutoFarmTool ~= "" then
 			local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 			local Backpack = LocalPlayer:WaitForChild("Backpack")
 			if Character and Character:FindFirstChild("Humanoid") and Character.Humanoid.Health > 0 and Backpack then
@@ -112,11 +112,11 @@ spawn(function()
 						end
 					end
 				else
+					wait(14)
 					print("Tool or SlashEvent missing.")
 					Character:FindFirstChild("Humanoid").Health = 0
 				end
 			else
-				wait(14)
 				print("Character or Humanoid invalid.")
 			end
 		end
@@ -168,7 +168,7 @@ do
 
 	Tabs.Main:AddButton({
 		Title = "Refresh weapons",
-		Description = "Refresh weapons",
+		Description = "WIP",
 		Callback = function()
 			refreshWeapons()
 		end
@@ -179,7 +179,7 @@ do
 		getgenv().AutoFarm = Options.Autofarm.Value
 	end)
 
-	local AutoParryToggle = Tabs.Main:AddToggle("AutoParry", {Title = "Auto Parry (Semi-godmode)", Default = getgenv().AutoParry })
+	local AutoParryToggle = Tabs.Main:AddToggle("AutoParry", {Title = "Semi-godmode", Default = getgenv().AutoParry })
 	AutoParryToggle:OnChanged(function()
 		getgenv().AutoParry = Options.AutoParry.Value
 	end)
