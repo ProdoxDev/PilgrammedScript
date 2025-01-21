@@ -50,75 +50,77 @@ spawn(function()
 	end
 end)
 spawn(function()
-	while wait() do
+	game:GetService("RunService").RenderStepped:Connect(function()
 		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-		if not getgenv().AutoFarm or getgenv().AutoFarmTool == "" then
-			print("AutoFarm disabled. Skipping this cycle.")
-			continue -- Skip the current iteration but continue the loop
-		end
-
-		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-		local Backpack = LocalPlayer:WaitForChild("Backpack")
-		if Character and Character:FindFirstChild("Humanoid") and Character.Humanoid.Health > 0 and Backpack then
-			print("Character and Humanoid are valid.")
-			if Backpack:FindFirstChild(getgenv().AutoFarmTool) and not Character:FindFirstChild(getgenv().AutoFarmTool) then
-				local tool = Backpack:FindFirstChild(getgenv().AutoFarmTool)
-				tool.Parent = Character
-				print("'Ceremonial Greatblade' equipped.")
-				wait(2)
-			else
-				print("Found 'Ceremonial Greatblade' in Backpack.")
-			end
-			local ToolInstance = Character:FindFirstChild(getgenv().AutoFarmTool)
-			if ToolInstance and ToolInstance:FindFirstChild("Slash") then
-				local SlashEvent = ToolInstance:FindFirstChild("Slash")
-				for i = 1, 4 do
-					SlashEvent:FireServer(i)
-					print("SlashEvent:FireServer(" .. i .. ") called.")
-				end
-
-
-				local mob
-				for _, MOBB in pairs(workspace.Mobs:GetChildren()) do
-					if MOBB:GetAttribute("Tower") == true and MOBB:FindFirstChildOfClass("Humanoid") and MOBB:FindFirstChildOfClass("Humanoid").Health > 0 then
-						mob = MOBB
-						print("Found mob with Tower attribute.")
-						break
-					end
-				end
-
-				if mob and mob:FindFirstChildOfClass("Humanoid").Health > 0 then
-					spawn(function()
-						if Character:FindFirstChild("HumanoidRootPart") then
-							Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0,0,getgenv().Distance)
-							print("Teleported to mob.")
-						end
-					end)
+		if getgenv().AutoFarm or getgenv().AutoFarmTool ~= "" then
+			local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+			local Backpack = LocalPlayer:WaitForChild("Backpack")
+			if Character and Character:FindFirstChild("Humanoid") and Character.Humanoid.Health > 0 and Backpack then
+				print("Character and Humanoid are valid.")
+				if Backpack:FindFirstChild(getgenv().AutoFarmTool) and not Character:FindFirstChild(getgenv().AutoFarmTool) then
+					local tool = Backpack:FindFirstChild(getgenv().AutoFarmTool)
+					tool.Parent = Character
+					print("'Ceremonial Greatblade' equipped.")
+					wait(2)
 				else
-					if Character:FindFirstChild("HumanoidRootPart") then
-						Character.HumanoidRootPart.CFrame = CFrame.new(4150, 403, -2380)
-						print("Teleported to default position.")
+					print("Found 'Ceremonial Greatblade' in Backpack.")
+				end
+				local ToolInstance = Character:FindFirstChild(getgenv().AutoFarmTool)
+				if ToolInstance and ToolInstance:FindFirstChild("Slash") then
+					local SlashEvent = ToolInstance:FindFirstChild("Slash")
+					for i = 1, 4 do
+						SlashEvent:FireServer(i)
+						print("SlashEvent:FireServer(" .. i .. ") called.")
 					end
-					if LocalPlayer.PlayerGui:FindFirstChild("ScreenGui") and LocalPlayer.PlayerGui.ScreenGui:FindFirstChild("Dialog") then
-						wait(2)
-						pcall(function()
-							for i = 4, 1, -1 do
-								workspace:WaitForChild("Map"):WaitForChild("TowerIsland"):WaitForChild("Plate"):WaitForChild("RemoteEvent"):FireServer(i)
-								wait()
+
+
+					local mob
+					for _, MOBB in pairs(workspace.Mobs:GetChildren()) do
+						if MOBB:GetAttribute("Tower") == true and MOBB:FindFirstChildOfClass("Humanoid") and MOBB:FindFirstChildOfClass("Humanoid").Health > 0 then
+							mob = MOBB
+							print("Found mob with Tower attribute.")
+							break
+						end
+					end
+
+					if mob and mob:FindFirstChildOfClass("Humanoid").Health > 0 then
+						spawn(function()
+							if Character:FindFirstChild("HumanoidRootPart") then
+								Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0,0,getgenv().Distance)
+								print("Teleported to mob.")
 							end
-							print("Plate remote event fired.")
 						end)
+					else
+						if Character:FindFirstChild("HumanoidRootPart") then
+							Character.HumanoidRootPart.CFrame = CFrame.new(4150, 403, -2380)
+							print("Teleported to default position.")
+						end
+						if LocalPlayer.PlayerGui:FindFirstChild("ScreenGui") and LocalPlayer.PlayerGui.ScreenGui:FindFirstChild("Dialog") then
+							wait(2)
+							pcall(function()
+								if game:GetService("Players").LocalPlayer.Statistics.SkyArenaRecord.Value >= 200 then
+									workspace:WaitForChild("Map"):WaitForChild("TowerIsland"):WaitForChild("Plate"):WaitForChild("RemoteEvent"):FireServer(4)
+								elseif game:GetService("Players").LocalPlayer.Statistics.SkyArenaRecord.Value >= 100 and game:GetService("Players").LocalPlayer.Statistics.SkyArenaRecord.Value < 200 then
+									workspace:WaitForChild("Map"):WaitForChild("TowerIsland"):WaitForChild("Plate"):WaitForChild("RemoteEvent"):FireServer(3)
+								elseif game:GetService("Players").LocalPlayer.Statistics.SkyArenaRecord.Value >= 50 and game:GetService("Players").LocalPlayer.Statistics.SkyArenaRecord.Value < 100 then
+									workspace:WaitForChild("Map"):WaitForChild("TowerIsland"):WaitForChild("Plate"):WaitForChild("RemoteEvent"):FireServer(2)
+								else
+									workspace:WaitForChild("Map"):WaitForChild("TowerIsland"):WaitForChild("Plate"):WaitForChild("RemoteEvent"):FireServer(1)
+								end
+								print("Plate remote event fired.")
+							end)
+						end
 					end
+				else
+					print("Tool or SlashEvent missing.")
+					Character:FindFirstChild("Humanoid").Health = 0
 				end
 			else
-				print("Tool or SlashEvent missing.")
-				Character:FindFirstChild("Humanoid").Health = 0
+				wait(7)
+				print("Character or Humanoid invalid.")
 			end
-		else
-			wait(7)
-			print("Character or Humanoid invalid.")
 		end
-	end
+	end)
 end)
 
 function refreshWeapons()
